@@ -1,7 +1,9 @@
 #Need to install requests package for python
  #sudo easy_install requests
 import requests
-import random
+
+import numpy as np
+from numpy import random
 import json
 
 
@@ -12,9 +14,12 @@ SNowInstance = 'https://dev61319.service-now.com/api/now/table/'
 def PutIt(sys_id) -> dict:
     rVAl = random.randint(0,1)
     randVal = 'true' if rVAl else 'false'
+    x = random.normal(0,3) + 5
+    xInt = int(x*rVAl)
     D = {
         'doer': sys_id,
-        'did_it': randVal
+        'did_it': randVal,
+        'doit_score': str(xInt)
     }
     return D
 
@@ -73,12 +78,12 @@ print(n,"records found\n")
 
 names = [[record['name'],record['sys_id']] for record in jsonResponseDoIt['result']]
 
-DELETE = True
+DELETE = False
 
 if not(DELETE):
     for i,n in enumerate(names):
         print(i,"->",n[0],n[1])
-        if i < 100:
+        if i < 100 or True:
             D = PutIt(n[1])
             tmpString = str(D)
             #print(D)
@@ -87,12 +92,12 @@ if not(DELETE):
             break
 
 else:
-    DoIts = getResponse(urlPut)
+    DoIts = getResponse(urlPut,printIt=True)
     sysIDSTuple = [[d['number'],d['sys_id']] for d in DoIts['result']]
 
     for s in sysIDSTuple:
         tmpID = str(s[0][4:])
-        if int(tmpID) - 1000 > 100:
+        if int(tmpID) - 1000 > 100 or True:
             urlTmp = urlPut + '/' + s[1]
             deleteIt(urlTmp)
             print(s[0],"deleted")
