@@ -7,13 +7,14 @@ from numpy import random
 import json
 
 
-def PutIt(sys_id) -> dict:
+def PutIt(sys_id,sys_id2) -> dict:
     rVAl = random.randint(0,10000) % 2
     randVal = 'true' if rVAl == 1 else 'false'
     x = np.abs(random.normal(0,3) + 5)
     xInt = int(x) if rVAl == 1 else 0
     D = {
         'doer': sys_id,
+        'doit_supervisor': sys_id2,
         'did_it': randVal,
         'doit_score': str(xInt)
     }
@@ -124,12 +125,16 @@ def main():
 
     else:
         DELETE = False
-
+        nmax = len(names)
         if not(DELETE):
             for i,n in enumerate(names):
+                randUser = i
+                while randUser == i:
+                    randUser = random.randint(0,len(names))
+                sys_id_supervisor = names[randUser]
                 print(i,"->",n[0],n[1])
                 if i < nmax:
-                    D = PutIt(n[1])
+                    D = PutIt(n[1],sys_id_supervisor)
                     tmpString = str(D)
                     #print(D)
                     POST(urlPut,tmpString)
@@ -137,7 +142,7 @@ def main():
                     break
 
         else:
-            DoIts = getResponse(urlPut,printIt=True)
+            DoIts = getResponse(urlPut)
             sysIDSTuple = [[d['number'],d['sys_id']] for d in DoIts['result']]
 
             for s in sysIDSTuple:
